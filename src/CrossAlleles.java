@@ -30,6 +30,7 @@ public class CrossAlleles {
                 doubleIndex++;
             }
         }
+
         return result;
     }
     public char[] calculateCross(String @NotNull [] firstParentAlleles, String @NotNull [] secondParentAlleles) {
