@@ -1,6 +1,21 @@
 import org.jetbrains.annotations.NotNull;
 
 public class CrossAlleles {
+    private @NotNull String lowercaseReorder(@NotNull String input) {
+        String result;
+
+        if (Character.isLowerCase(input.charAt(0)) && Character.isUpperCase(input.charAt(1))) {
+            result = charsConcat(input.charAt(1), input.charAt(0));
+        }
+        else if (Character.isUpperCase(input.charAt(0)) && Character.isLowerCase(input.charAt(1))) {
+            result = charsConcat(input.charAt(0), input.charAt(1));
+        }
+        else {
+            return input;
+        }
+
+        return result;
+    }
     private @NotNull String charsConcat(char @NotNull ... chars) {
         StringBuilder result = new StringBuilder(chars.length);
 
@@ -12,8 +27,27 @@ public class CrossAlleles {
         }
         return result.toString();
     }
+    /**
+     {@code populateChars} loop will match the following statements:
+
+     <pre>
+     {@code
+     result[1] = parentAlleles[0].charAt(0);
+     result[2] = parentAlleles[0].charAt(1);
+     result[3] = parentAlleles[1].charAt(0);
+     result[4] = parentAlleles[1].charAt(1);
+     etc...
+     }
+
+
+     result[index] increments by 1
+     parentAlleles[index] increments every other iteration
+     charAt(index) shifts between 0 and 1
+     </pre>
+
+     */
     private char @NotNull [] populateChars(String @NotNull [] parentAlleles) {
-        // result should be of length 8
+
         char[] result = new char[parentAlleles.length << 1];
 
         boolean firstOccurrence = true;
@@ -33,32 +67,27 @@ public class CrossAlleles {
 
         return result;
     }
-    public char[] calculateCross(String @NotNull [] firstParentAlleles, String @NotNull [] secondParentAlleles) {
-        // length of 8
+    public String[] calculateCross(String @NotNull [] firstParentAlleles, String @NotNull [] secondParentAlleles) {
+        String[] result = new String[4];
+
         char[] firstParentChars = populateChars(firstParentAlleles);
         char[] secondParentChars = populateChars(secondParentAlleles);
 
-        // should be of length 16
-        String[] result = new String[firstParentAlleles.length << 2];
+        int doubleIndex = 0;
+        boolean firstOccurrence = true;
 
         for (int i = 0; i < result.length; i++) {
-            String currentAllele = "";
-            
+            if (firstOccurrence) {
+                result[i] = lowercaseReorder(charsConcat(firstParentChars[doubleIndex], secondParentChars[0]));
+                firstOccurrence = false;
+            }
+            else {
+                result[i] = lowercaseReorder(charsConcat(firstParentChars[doubleIndex], secondParentChars[1]));
+                firstOccurrence = true;
+                doubleIndex++;
+            }
         }
 
-
-        return firstParentChars;
-    }
-    public static void main(String[] args) {
-        CrossAlleles cross = new CrossAlleles();
-
-        String[] array = {"GT", "Gt", "gT", "gt"};
-        String[] array2 = {"GT", "Gt", "gT", "gt"};
-
-        char[] result = cross.calculateCross(array, array2);
-
-        for (char num : result) {
-            System.out.print(num + ", ");
-        }
+        return result;
     }
 }
